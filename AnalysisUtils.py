@@ -27,11 +27,37 @@ def defineRoI():
 
 
 
-def read_file(file_name_list):
+#
+# Routine to prepare datasets: check for possible saturation and compute, subtract pedestal 
+##
+def prepare_dataset(_df):
+
+    _df = _df.copy()        
+    print('preparing dataframe for channel : ') 
+    _df = do_reindex(_df)
+    _df = convert_time(_df)
+    #_df = define_channel(_df)
+    #_df = do_reindex(_df)
+    _df = flag_saturated(_df, 65536)
+    _df = compute_pedestal(_df)
+    _df = subtract_pedestal(_df)
+    _df = remove_noise(_df) 
+    #_df = has_signal_new(_df)
+    _df = compute_singlepe(_df)
+    _df = select_singlepe(_df)
+    #_df = tagGoodwf(_df)        
+
+    print('done!')
+
+    return _df
+
+
+
+def read_file(file_name_list, start, stop):
     df_list =[]    
     _df = pd.DataFrame()
 
-    for f in file_name_list:
+    for f in file_name_list[start:stop]:
         #print(f)
         df_tmp = pd.read_csv(f, sep='\t', header=None) 
         
