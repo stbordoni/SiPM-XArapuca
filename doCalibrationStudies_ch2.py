@@ -22,9 +22,11 @@ from AnalysisUtils import *
 
 def main(start, stop):
 
-    base_path = '/eos/user/s/sbordoni/SiPM_XArapucafiles/calib15june-ch2/data'
+    #base_path = '/eos/user/s/sbordoni/SiPM_XArapucafiles/calib15june-ch2/data'
+    base_path = '/Users/bordoni/protoDUNE/XeDoping/SiPM-XArapuca_save/data/calib_june15_ch3'
 
-    file_path = os.path.join(base_path,'C2*.dat')
+
+    file_path = os.path.join(base_path,'C3*.dat')
 
     file_name_list =  glob.glob(file_path) 
     #print(file_name_list)
@@ -33,7 +35,10 @@ def main(start, stop):
 
     df_wf_ch2_proc = prepare_dataset(df_wf_ch2)
 
-    outfilename='calib15june-ch2_'+ start+'-'+stop+'files.csv'
+    outfilename1='calib15june-ch3_files.csv'
+    df_wf_ch2_proc.to_csv(outfilename1)
+
+    outfilename='calib15june-ch3_'+ str(start)+'-'+str(stop)+'files.csv'
     df_wf_ch2_proc.to_csv(outfilename)
 
     print('done!')
@@ -48,3 +53,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     main(args.first, args.last) 
+
+
