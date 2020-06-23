@@ -58,7 +58,7 @@ def read_file(file_name_list, start, stop):
     _df = pd.DataFrame()
 
     for f in file_name_list[start:stop]:
-        #print(f)
+        print(f)
         df_tmp = pd.read_csv(f, sep='\t', header=None) 
         
         df_list.append(df_tmp)
@@ -138,16 +138,16 @@ def find_singlePE(x, myrange):
     x = x[min(myrange) : max(myrange)]
     
     #peaks, properties = find_peaks(x, height=[2000,8000], width=600, distance=4000)  # first test for calib ch2
-    peaks, properties = find_peaks(x, height=[2000,6000], width=600, distance=4000)  # first test for calib ch2
-    #peaks, properties = find_peaks(x, prominence=2000, width=600, distance=4000)  # first test for calib ch2
+    #peaks, properties = find_peaks(x, height=[2000,6000], width=600, distance=4000)  # first test for calib ch2
+    peaks, properties = find_peaks(x, prominence=2000, width=600, distance=4000)  # first test for calib ch2
 
     
     peaks = peaks+min(myrange)
     
     npeaks = len(peaks)  
     if (npeaks > 0):
-        height = properties['peak_heights'][0]
-        #height = properties['prominences'][0]
+        #height = properties['peak_heights'][0]
+        height = properties['prominences'][0]
         width  = properties['widths'][0]
         xlow   = int(properties['left_ips'][0])
         xhigh  = int(properties['right_ips'][0])

@@ -22,24 +22,30 @@ from AnalysisUtils import *
 
 def main(start, stop):
 
-    #base_path = '/eos/user/s/sbordoni/SiPM_XArapucafiles/calib15june-ch2/data'
-    base_path = '/Users/bordoni/protoDUNE/XeDoping/SiPM-XArapuca_save/data/calib_june15_ch3'
+    base_path = '/eos/project/f/flic2019/Data/SiPM_XArapuca/SiPM_XArapuca_datfiles/calib15june-ch3/data'
+    #base_path = '/eos/project/f/flic2019/Data/SiPM_XArapuca/SiPM_XArapuca_datfiles/march02-2020/data'
+    #base_path = '/eos/user/s/sbordoni/SiPM_XArapucafiles/calib15june-ch3/data'
+    #base_path = '/Users/bordoni/protoDUNE/XeDoping/SiPM-XArapuca_save/data/calib_june15_ch3'
 
 
     file_path = os.path.join(base_path,'C3*.dat')
 
     file_name_list =  glob.glob(file_path) 
-    #print(file_name_list)
+    print(file_name_list)
 
     df_wf_ch2 = read_file(file_name_list, start, stop)
 
     df_wf_ch2_proc = prepare_dataset(df_wf_ch2)
 
-    outfilename1='calib15june-ch3_files.csv'
-    df_wf_ch2_proc.to_csv(outfilename1)
+    #outfilename1='calib15june-ch3_files.csv'
+    #df_wf_ch2_proc.to_csv(outfilename1)
 
-    outfilename='calib15june-ch3_'+ str(start)+'-'+str(stop)+'files.csv'
+    outfilename='calib15june-ch3_'+ str(start)+'-'+str(stop)+'files_prominence2000.csv'
     df_wf_ch2_proc.to_csv(outfilename)
+
+    np_wf_ch2_proc = df_wf_ch2_proc.to_numpy()
+    npy_outfilename='calib15june-ch3_'+ str(start)+'-'+str(stop)+'files_prominence2000.npy'
+    np.save(npy_outfilename, np_wf_ch2_proc )
 
     print('done!')
     return
