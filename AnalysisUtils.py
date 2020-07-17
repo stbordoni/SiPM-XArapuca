@@ -10,20 +10,43 @@ import matplotlib.pyplot as plt
 
 
 ped   = list(range(10, 2000))   # to estimate the pedestal
-rowin = list(range(3, 50004))   # all readout window
-wf    = list(range(3000, 10000))  # waveform 
-tail  = list(range(40500, 50000)) # to estimate the single p.e.
+rowin = list(range(3, 100004))   # all readout window
+wf    = list(range(4000, 50000))  # waveform 
+tail  = list(range(60500, 100000)) # to estimate the single p.e.
 
 
-def defineRoI():
+def defineRoI(df):
     
-    print('Defined Region of Interest: ' )
-    print('Pedestal region (ped)  : [', min(ped)  , ',' , max(ped)  , ']'  ) 
-    print('Readout window (rowin) : [', min(rowin), ',' , max(rowin), ']'  ) 
-    print('Waveform (wf)          : [', min(wf)   , ',' , max(wf)   , ']'  ) 
-    print('Waveform tail (tail)   : [', min(tail) , ',' , max(tail) , ']'  ) 
+    if (df.shape[1]==50004):
+        ped   = list(range(10, 2000))   # to estimate the pedestal
+        rowin = list(range(3, 50004))   # all readout window
+        wf    = list(range(4000, 20000))  # waveform 
+        tail  = list(range(40500, 50000)) # to estimate the single p.e.
 
-    return ped, rowin, wf, pe
+        
+        print('Defined Region of Interest: ' )
+        print('Pedestal region (ped)  : [', min(ped)  , ',' , max(ped)  , ']'  ) 
+        print('Readout window (rowin) : [', min(rowin), ',' , max(rowin), ']'  ) 
+        print('Waveform (wf)          : [', min(wf)   , ',' , max(wf)   , ']'  ) 
+        print('Waveform tail (tail)   : [', min(tail) , ',' , max(tail) , ']'  ) 
+
+    else:   
+        
+        ped   = list(range(10, 2000))   # to estimate the pedestal
+        rowin = list(range(3, 100004))   # all readout window
+        wf    = list(range(4000, 50000))  # waveform 
+        tail  = list(range(60500, 100000)) # to estimate the single p.e.
+
+        
+        print('Defined Region of Interest: ' )
+        print('Pedestal region (ped)  : [', min(ped)  , ',' , max(ped)  , ']'  ) 
+        print('Readout window (rowin) : [', min(rowin), ',' , max(rowin), ']'  ) 
+        print('Waveform (wf)          : [', min(wf)   , ',' , max(wf)   , ']'  ) 
+        print('Waveform tail (tail)   : [', min(tail) , ',' , max(tail) , ']'  ) 
+        
+        
+    return ped, rowin, wf, tail
+
 
 
 
@@ -34,6 +57,9 @@ def prepare_dataset(_df):
 
     _df = _df.copy()        
     print('preparing dataframe for channel : ') 
+
+    ped, rowin, wf, tail = defineRoI(_df)
+
     _df = do_reindex(_df)
     _df = convert_time(_df)
     #_df = define_channel(_df)
@@ -44,7 +70,7 @@ def prepare_dataset(_df):
     _df = remove_noise(_df) 
     _df = has_signal_new(_df)
     _df = compute_singlepe(_df)
-    _df = select_singlepe(_df)
+    #_df = select_singlepe(_df)
     #_df = tagGoodwf(_df)        
 
     print('done!')
@@ -115,7 +141,7 @@ def find_signal(x, myrange):
     
     x = x[min(myrange) : max(myrange)]
 
-    peaks, properties = find_peaks(x, height=[15,2000], width=10)
+    peaks, properties = find_peaks(x, height=[15,6000], width=10)
     peaks = peaks+min(myrange)
     
     npeaks = len(peaks)  
@@ -187,10 +213,17 @@ def select_singlepe(df):
     #            (df['pe height']>0)&
     #            (df['pe width']>0),['pe height', 'pe width']].values
 
-    mu_pe, cov_pe = estimate_gaus_param(X_pe,True)
 
-    df['spe 1sig'] = df.apply(lambda x: select_wf(x[['pe height','pe width']], mu_pe, cov_pe, 1), axis=1)
-    df['spe 2sig'] = df.apply(lambda x: select_wf(x[['pe height','pe width']], mu_pe, cov_pe, 2), axis=1)
+    if (len(X_pe)>0):
+
+        mu_pe, cov_pe = estimate_gaus_param(X_pe,True)
+
+        df['spe 1sig'] = df.apply(lambda x: select_wf(x[['pe height','pe width']], mu_pe, cov_pe, 1), axis=1)
+        df['spe 2sig'] = df.apply(lambda x: select_wf(x[['pe height','pe width']], mu_pe, cov_pe, 2), axis=1)
+
+    else:
+        df['spe 1sig'] = False
+        df['spe 2sig'] = False
 
     return df
 
